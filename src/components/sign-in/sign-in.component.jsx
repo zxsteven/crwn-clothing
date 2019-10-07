@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { connect } from 'react-redux'
 
 import FormInput from '../form-input/form-input.component'
@@ -12,43 +12,34 @@ import {
   SignInButtons 
 } from './sign-in.styles'
 
-class SignIn extends React.Component {
-  constructor(props) {
-  super(props)
+const SignIn = ({ emailSignInStart, googleSignInStart }) => {
+  const [ userCredentials, setCredentials ] = useState({ email: '', password: ''})
 
-  this.state = {
-    email: '',
-    password: ''
+  const { email, password } = userCredentials
+  
+  const handleSubmit = async event => {
+    event.preventDefault();
+
+    emailSignInStart(email, password)
+  };
+
+  const handleChange = event => {
+    const { value, name } = event.target
+
+    setCredentials({...userCredentials, [name]: value })
   }
-}
 
-handleSubmit = async event => {
-  event.preventDefault();
-  const { emailSignInStart } = this.props
-  const { email, password } = this.state;
-
-  emailSignInStart(email, password)
-};
-
-handleChange = event => {
-  const { value, name } = event.target
-
-  this.setState({ [name]: value })
-}
-
-  render() {
-    const { googleSignInStart } = this.props
     return(
       <SignInContainer>
         <SignInTitle>I already have an account</SignInTitle>
         <span>Sign in with your email and password</span>
 
-        <form onSubmit={this.handleSubmit}>
+        <form onSubmit={handleSubmit}>
           <FormInput 
             name='email' 
             type="email" 
-            handleChange={this.handleChange}
-            value={this.state.email}  
+            handleChange={handleChange}
+            value={email}  
             label='email'
             required 
           />
@@ -56,8 +47,8 @@ handleChange = event => {
           <FormInput 
             name='password' 
             type="password" 
-            handleChange={this.handleChange}
-            value={this.state.password} 
+            handleChange={handleChange}
+            value={password} 
             label='password'
             required 
           />
@@ -78,7 +69,6 @@ handleChange = event => {
       </SignInContainer>
     )
   }
-}
 
 const mapDispatchToProps = dispatch => ({
   googleSignInStart: () => dispatch(googleSignInStart()),
